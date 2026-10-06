@@ -4,14 +4,6 @@ import { getOrders } from "@/lib/admin-data";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { parseDate, parsePage } from "@/lib/format";
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Menunggu",
-  preparing: "Diproses",
-  ready: "Siap",
-  completed: "Selesai",
-  cancelled: "Dibatalkan",
-};
-
 export default async function OrdersPage({
   searchParams,
 }: PageProps<"/admin/orders">) {

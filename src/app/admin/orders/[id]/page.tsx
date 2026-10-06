@@ -4,14 +4,6 @@ import { getOrder } from "@/lib/admin-data";
 import StatusBadge from "@/components/admin/StatusBadge";
 import StatusActions from "@/components/admin/StatusActions";
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Menunggu",
-  preparing: "Diproses",
-  ready: "Siap",
-  completed: "Selesai",
-  cancelled: "Dibatalkan",
-};
-
 export default async function OrderDetailPage({
   params,
 }: PageProps<"/admin/orders/[id]">) {
