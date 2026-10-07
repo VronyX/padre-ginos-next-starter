@@ -4,6 +4,7 @@ import { all, get, run } from "./db";
 import { failReadIfSimulated, simulateLatency } from "./demo";
 import type { OrderStatus } from "./orders";
 import type { PizzaSize } from "./types";
+import { requirePermission } from "./auth";
 
 // Data access for the staff dashboard (/admin).
 // Staff should see the current state, so almost nothing here is cached.
@@ -67,11 +68,10 @@ export async function updatePizzaPrices(
   sizes: Record<PizzaSize, number>,
 ): Promise<void> {
   for (const size of ["S", "M", "L"] as const) {
-    await run("UPDATE pizzas SET price = ? WHERE pizza_type_id = ? AND size = ?", [
-      sizes[size].toFixed(2),
-      id,
-      size,
-    ]);
+    await run(
+      "UPDATE pizzas SET price = ? WHERE pizza_type_id = ? AND size = ?",
+      [sizes[size].toFixed(2), id, size],
+    );
   }
 }
 
@@ -82,6 +82,7 @@ export async function getOrders({
   page: number;
   date: string | null;
 }): Promise<{ orders: OrderSummary[]; totalPages: number }> {
+  await requirePermission("admin:view");
   await simulateLatency("read");
   await failReadIfSimulated();
   const offset = (page - 1) * ORDERS_PAGE_SIZE;
@@ -114,15 +115,17 @@ export async function getOrders({
 }
 
 export async function getOrder(id: number): Promise<OrderDetail | null> {
+  await requirePermission("admin:view");
   await simulateLatency("read");
   const order = await get<{
     id: number;
     date: string;
     time: string;
     status: OrderStatus;
-  }>("SELECT order_id AS id, date, time, status FROM orders WHERE order_id = ?", [
-    id,
-  ]);
+  }>(
+    "SELECT order_id AS id, date, time, status FROM orders WHERE order_id = ?",
+    [id],
+  );
   if (!order) return null;
   const lines = await all<OrderLine>(
     `SELECT t.pizza_type_id AS pizzaId, t.name, p.size, d.quantity,
@@ -160,6 +163,7 @@ export async function getLatestDay(): Promise<{
   orders: number;
   revenue: number;
 }> {
+  await requirePermission("admin:view");
   await simulateLatency("read");
   const row = await get<{ date: string; orders: number; revenue: number }>(
     `SELECT o.date, COUNT(DISTINCT o.order_id) AS orders,
@@ -174,9 +178,15 @@ export async function getLatestDay(): Promise<{
 }
 
 /** All-time best sellers. A heavy aggregate: slow on purpose. */
-export async function getTopPizzas(): Promise<
-  { id: string; name: string; sold: number; revenue: number }[]
-> {
+export async function getTopPizzas(): Promise<TopPizza[]> {
+  // "use cache" cannot read cookies, so check first, then call the cached part
+  await requirePermission("admin:view");
+  return topPizzas();
+}
+
+type TopPizza = { id: string; name: string; sold: number; revenue: number };
+
+async function topPizzas(): Promise<TopPizza[]> {
   // History does not change minute to minute: compute it once an hour at most
   "use cache";
   cacheLife("hours");
@@ -195,13 +205,20 @@ export async function getTopPizzas(): Promise<
 
 /** Orders per status on the latest day. Fails when "Simulasi gagal" is on. */
 export async function getStatusCounts(): Promise<Record<OrderStatus, number>> {
+  await requirePermission("admin:view");
   await simulateLatency("read");
   await failReadIfSimulated();
   const rows = await all<{ status: OrderStatus; n: number }>(
     `SELECT status, COUNT(*) AS n FROM orders
      WHERE date = (SELECT MAX(date) FROM orders) GROUP BY status`,
   );
-  const counts = { pending: 0, preparing: 0, ready: 0, delivered: 0, cancelled: 0 };
+  const counts = {
+    pending: 0,
+    preparing: 0,
+    ready: 0,
+    delivered: 0,
+    cancelled: 0,
+  };
   for (const r of rows) counts[r.status] = r.n;
   return counts;
 }
