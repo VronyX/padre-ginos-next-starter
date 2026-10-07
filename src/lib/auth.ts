@@ -27,3 +27,10 @@ export async function requirePermission(permission: Permission): Promise<User> {
   if (!can(user, permission)) forbidden();
   return user;
 }
+
+export async function requireUser(): Promise<User> {
+  const user = await getCurrentUser();
+  if (!user) unauthorized();
+  
+  return user;
+}
