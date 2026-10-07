@@ -4,6 +4,7 @@ import type { Role, User } from "./types";
 // Pure functions: safe on the server (enforcement) and the client (UI hints).
 export const PERMISSIONS = {
   "admin:view": ["staff", "admin"],
+  "products:manage": ["admin"],
   "orders:update": ["staff", "admin"],
 } as const satisfies Record<string, readonly Role[]>;
 

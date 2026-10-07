@@ -5,17 +5,22 @@ import { Suspense } from "react";
 import PriceForm from "@/components/admin/PriceForm";
 import { getSalesBySize } from "@/lib/admin-data";
 import { getPizza } from "@/lib/data";
+import { requirePermission } from "@/lib/auth";
 
 export default async function ProductDetailPage({
   params,
 }: PageProps<"/admin/products/[id]">) {
+  await requirePermission("products:manage")
   const { id } = await params;
   const pizza = await getPizza(id);
   if (!pizza) notFound();
 
   return (
     <section className="max-w-3xl">
-      <Link href="/admin/products" className="text-sm text-brand hover:underline">
+      <Link
+        href="/admin/products"
+        className="text-sm text-brand hover:underline"
+      >
         ← Semua produk
       </Link>
       <div className="mt-4 flex items-center gap-5">
@@ -42,7 +47,9 @@ export default async function ProductDetailPage({
       <PriceForm pizzaId={pizza.id} sizes={pizza.sizes} />
 
       <h2 className="mt-8 text-lg font-bold">Terjual per ukuran</h2>
-      <Suspense fallback={<p className="mt-2 animate-pulse text-ink/60">Menghitung…</p>}>
+      <Suspense
+        fallback={<p className="mt-2 animate-pulse text-ink/60">Menghitung…</p>}
+      >
         <SalesBySize id={pizza.id} />
       </Suspense>
     </section>
@@ -56,7 +63,8 @@ async function SalesBySize({ id }: { id: string }) {
     <ul className="mt-2 flex gap-3">
       {sales.map((s) => (
         <li key={s.size} className="rounded-xl bg-white px-4 py-3 shadow-sm">
-          <span className="font-semibold">{s.size}</span>: {s.sold.toLocaleString("en-US")}
+          <span className="font-semibold">{s.size}</span>:{" "}
+          {s.sold.toLocaleString("en-US")}
         </li>
       ))}
     </ul>

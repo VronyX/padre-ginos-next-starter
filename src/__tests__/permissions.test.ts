@@ -10,12 +10,21 @@ describe("can", () => {
   it("customers cannot touch the dashboard", () => {
     expect(can({ role: "customer" }, "admin:view")).toBe(false);
     expect(can({ role: "customer" }, "orders:update")).toBe(false);
+    expect(can({ role: "customer" }, "products:manage")).toBe(false);
   });
 
   it("staff and admins can update orders", () => {
     expect(can({ role: "staff" }, "orders:update")).toBe(true);
     expect(can({ role: "admin" }, "orders:update")).toBe(true);
   });
+
+  it("staff cannot touch products", () => {
+    expect(can({ role: "staff" }, "products:manage")).toBe(false);
+  })
+
+  it("admin can update products", () => {
+    expect(can({ role: "admin" }, "products:manage")).toBe(true);
+  })
 });
 
 describe("orderStatusInput", () => {

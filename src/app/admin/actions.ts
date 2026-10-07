@@ -27,6 +27,8 @@ export async function updatePricesAction(
   _prev: PriceFormState,
   formData: FormData,
 ): Promise<PriceFormState> {
+  await requirePermission("products:manage");
+
   const id = formData.get("id");
   const values = {
     S: String(formData.get("S") ?? ""),
@@ -48,7 +50,10 @@ export async function updatePricesAction(
       prices[size] = price;
     }
   }
-  if (Object.keys(errors).length === 0 && !(prices.S < prices.M && prices.M < prices.L)) {
+  if (
+    Object.keys(errors).length === 0 &&
+    !(prices.S < prices.M && prices.M < prices.L)
+  ) {
     errors.form = "Harga harus naik sesuai ukuran: S < M < L.";
   }
   if (Object.keys(errors).length > 0) {
