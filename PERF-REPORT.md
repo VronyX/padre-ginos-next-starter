@@ -13,7 +13,7 @@ Cara mengukur (selalu sama):
 | A | Filter analitik terasa lambat saat mengetik | Performance Panel (INP) | | | banyak component yang ikut dirender ulang | | |
 | B | Dashboard makin berat kalau dibiarkan terbuka | Performance & Profiler | | Performance = 227ms | FormatPrice di taruh di live sehingga saat live update maka akan merender semua ulang | Hapus formatPrice dari live dan gunakan formatPrice yg ada di lib | Performance = 7.86ms |
 | C | Overview lambat di laptop staf | .next\diagnostics\route-bundle-stats.json | | /admin = 847677 | Bagian Overview terlalu besar import dari recharts | Pecah tampilan overview mana yang server mana yang client | /admin = 502786 |
-| D | Detail order lama terbuka | | | | | | |
+| D | Detail order lama terbuka | Network Timing | | Time=1.58s | Detail order lambat karena beberapa query database dijalankan secara berurutan, terutama getDayOrderCount dan satu query getPizzaSoldOnDay untuk setiap pizza, sehingga waktu response bertambah seiring jumlah pizza dalam order | Menambahkan query pemanggilan sekaligus | Time=789ms |
 
 ## Catatan
 
