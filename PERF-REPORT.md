@@ -12,7 +12,7 @@ Cara mengukur (selalu sama):
 |---|---|---|---|---|---|---|---|
 | A | Filter analitik terasa lambat saat mengetik | Performance Panel (INP) | | | banyak component yang ikut dirender ulang | | |
 | B | Dashboard makin berat kalau dibiarkan terbuka | Performance & Profiler | | Performance = 227ms | FormatPrice di taruh di live sehingga saat live update maka akan merender semua ulang | Hapus formatPrice dari live dan gunakan formatPrice yg ada di lib | Performance = 7.86ms |
-| C | Overview lambat di laptop staf | | | | | | |
+| C | Overview lambat di laptop staf | .next\diagnostics\route-bundle-stats.json | | /admin = 847677 | Bagian Overview terlalu besar import dari recharts | Pecah tampilan overview mana yang server mana yang client | /admin = 502786 |
 | D | Detail order lama terbuka | | | | | | |
 
 ## Catatan

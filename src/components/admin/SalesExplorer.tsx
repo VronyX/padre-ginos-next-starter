@@ -3,7 +3,6 @@
 import { memo, useDeferredValue, useMemo, useState } from "react";
 import type { DailySale } from "@/lib/admin-data";
 import { type WeeklyRow as Row, withWeekAverage } from "@/lib/sales";
-import { useLive } from "./LiveProvider";
 import { formatPrice } from "@/lib/format";
 
 const MAX_ROWS = 1000;
