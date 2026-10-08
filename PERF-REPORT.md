@@ -10,8 +10,8 @@ Cara mengukur (selalu sama):
 
 | # | Keluhan | Alat ukur | Metrik | Sebelum | Hipotesis | Perbaikan | Sesudah |
 |---|---|---|---|---|---|---|---|
-| A | Filter analitik terasa lambat saat mengetik | | | | | | |
-| B | Dashboard makin berat kalau dibiarkan terbuka | | | | | | |
+| A | Filter analitik terasa lambat saat mengetik | Performance Panel (INP) | | | banyak component yang ikut dirender ulang | | |
+| B | Dashboard makin berat kalau dibiarkan terbuka | Performance & Profiler | | Performance = 227ms | FormatPrice di taruh di live sehingga saat live update maka akan merender semua ulang | Hapus formatPrice dari live dan gunakan formatPrice yg ada di lib | Performance = 7.86ms |
 | C | Overview lambat di laptop staf | | | | | | |
 | D | Detail order lama terbuka | | | | | | |
 
